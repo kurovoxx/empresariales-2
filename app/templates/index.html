@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h2>Envío de Reportes</h2>
+    <form action="/process" method="POST" enctype="multipart/form-data">
+        <div style="margin-bottom: 15px;">
+            <label>Grupo de Destinatarios:</label><br>
+            {% if not groups %}
+                <p style="color: red;">Por favor cree un grupo en la pestaña "Grupos de Email"</p>
+            {% else %}
+                <select name="group_id" style="width: 100%; padding: 8px;">
+                    {% for group in groups %}
+                        <option value="{{ group.id }}">{{ group.name }}</option>
+                    {% endfor %}
+                </select>
+            {% endif %}
+        </div>
+
+        <div style="margin-bottom: 15px;">
+            <label>Departamento:</label><br>
+            <select name="department" style="width: 100%; padding: 8px;">
+                <option value="cyber">Ciberseguridad</option>
+                <option value="hr">Recursos Humanos</option>
+                <option value="data">Data Analysis</option>
+            </select>
+        </div>
+
+        <div style="margin-bottom: 15px;">
+            <label>Seleccionar Excel:</label><br>
+            <input type="file" name="excel_file" accept=".xlsx" required style="width: 100%; padding: 8px;">
+        </div>
+
+        <div style="margin-bottom: 15px;">
+            <label>Asunto del Correo:</label><br>
+            <input type="text" name="subject" placeholder="Ej: Reporte Mensual de Vulnerabilidades" required style="width: 100%; padding: 8px;">
+        </div>
+
+        <div style="margin-bottom: 15px;">
+            <label>Contenido del Correo:</label><br>
+            <textarea name="body" rows="4" placeholder="Estimados, adjuntamos el reporte..." required style="width: 100%; padding: 8px;"></textarea>
+        </div>
+
+        <button type="submit" style="background: #28a745; color: white; border: none; padding: 10px 20px; cursor: pointer; border-radius: 4px;">Generar y Enviar</button>
+    </form>
+{% endblock %}

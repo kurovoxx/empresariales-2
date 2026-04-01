@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Reporte de Ciberseguridad</title>
+    <style>
+        body { font-family: 'Helvetica', sans-serif; margin: 0; padding: 40px; color: #333; }
+        .header { text-align: center; border-bottom: 2px solid #333; padding-bottom: 10px; margin-bottom: 30px; }
+        .summary { display: flex; justify-content: space-between; margin-bottom: 30px; }
+        .summary-box { border: 1px solid #ddd; padding: 15px; border-radius: 4px; text-align: center; width: 30%; }
+        .summary-box h3 { margin: 0; font-size: 14px; color: #666; }
+        .summary-box p { margin: 5px 0 0; font-size: 24px; font-weight: bold; color: #d32f2f; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th { background-color: #f2f2f2; color: #333; text-align: left; padding: 10px; border: 1px solid #ddd; }
+        td { padding: 10px; border: 1px solid #ddd; font-size: 12px; }
+        .severidad-Alta { color: orange; font-weight: bold; }
+        .severidad-Crítica { color: red; font-weight: bold; }
+        .footer { position: fixed; bottom: 0; width: 100%; text-align: right; font-size: 10px; color: #999; border-top: 1px solid #eee; padding-top: 5px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>REPORTE DE VULNERABILIDADES</h1>
+        <p>Fecha de emisión: {{ fecha_reporte }}</p>
+    </div>
+
+    <div class="summary">
+        <div class="summary-box">
+            <h3>Total Hallazgos</h3>
+            <p>{{ total }}</p>
+        </div>
+        <div class="summary-box">
+            <h3>Críticas/Altas</h3>
+            <p>{{ counts.get('Crítica', 0) + counts.get('Alta', 0) }}</p>
+        </div>
+    </div>
+
+    <h3>Detalle de Vulnerabilidades</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Host</th>
+                <th>Severidad</th>
+                <th>Estado</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for v in vulnerabilidades %}
+            <tr>
+                <td>{{ v.ID_Vulnerabilidad }}</td>
+                <td>{{ v.Host }}</td>
+                <td class="severidad-{{ v.Severidad }}">{{ v.Severidad }}</td>
+                <td>{{ v.Estado }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="footer">
+        Sistema de Automatización Empresarial - Confidencial
+    </div>
+</body>
+</html>
