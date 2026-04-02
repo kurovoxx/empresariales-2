@@ -1,20 +1,24 @@
 {% extends 'base.html' %}
 
+{% block extra_css %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/groups.css') }}">
+{% endblock %}
+
 {% block content %}
     <h2>Gestión de Grupos y Correos</h2>
     
-    <div style="border: 1px solid #ddd; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+    <div class="form-section">
         <h3>Crear Nuevo Grupo</h3>
         <form action="/groups/create" method="POST">
-            <input type="text" name="group_name" placeholder="Nombre del Grupo (ej: Gerencia)" required style="width: 100%; padding: 8px; margin-bottom: 10px;">
-            <button type="submit" style="background: #007bff; color: white; border: none; padding: 10px 20px; cursor: pointer; border-radius: 4px;">Crear Grupo</button>
+            <input type="text" name="group_name" placeholder="Nombre del Grupo (ej: Gerencia)" required class="form-input">
+            <button type="submit" class="btn-primary">Crear Grupo</button>
         </form>
     </div>
 
-    <div style="border: 1px solid #ddd; padding: 20px; border-radius: 8px;">
+    <div class="form-section">
         <h3>Añadir Email a Grupo</h3>
         <form action="/groups/add_email" method="POST">
-            <select name="group_id" style="width: 100%; padding: 8px; margin-bottom: 10px;">
+            <select name="group_id" class="form-input">
                 {% if groups %}
                     {% for group in groups %}
                         <option value="{{ group.id }}">{{ group.name }}</option>
@@ -23,8 +27,8 @@
                     <option disabled>No hay grupos disponibles</option>
                 {% endif %}
             </select>
-            <input type="email" name="email" placeholder="correo@ejemplo.com" required style="width: 100%; padding: 8px; margin-bottom: 10px;">
-            <button type="submit" style="background: #17a2b8; color: white; border: none; padding: 10px 20px; cursor: pointer; border-radius: 4px;">Añadir Email</button>
+            <input type="email" name="email" placeholder="correo@ejemplo.com" required class="form-input">
+            <button type="submit" class="btn-info">Añadir Email</button>
         </form>
     </div>
 {% endblock %}

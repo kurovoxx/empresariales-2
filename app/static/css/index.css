@@ -1,0 +1,60 @@
+/* index.css */
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: inline-block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: #4a5568;
+}
+
+.text-danger {
+    color: #e53e3e;
+    font-size: 14px;
+    margin-top: 5px;
+    display: block;
+}
+
+.form-control {
+    width: 100%; 
+    padding: 12px 15px;
+    box-sizing: border-box;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+    font-family: inherit;
+    font-size: 15px;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: #4361ee;
+    box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.15);
+}
+
+textarea.form-control {
+    resize: vertical;
+    min-height: 100px;
+}
+
+.btn-success {
+    background: #10b981; 
+    color: white; 
+    border: none; 
+    padding: 14px 28px; 
+    cursor: pointer; 
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    width: 100%; 
+    margin-top: 10px;
+}
+
+.btn-success:hover {
+    background: #059669;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+    transform: translateY(-1px);
+}

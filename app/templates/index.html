@@ -1,14 +1,18 @@
 {% extends 'base.html' %}
 
+{% block extra_css %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+{% endblock %}
+
 {% block content %}
     <h2>Envío de Reportes</h2>
     <form action="/process" method="POST" enctype="multipart/form-data">
-        <div style="margin-bottom: 15px;">
+        <div class="form-group">
             <label>Grupo de Destinatarios:</label><br>
             {% if not groups %}
-                <p style="color: red;">Por favor cree un grupo en la pestaña "Grupos de Email"</p>
+                <p class="text-danger">Por favor cree un grupo en la pestaña "Crear Grupos"</p>
             {% else %}
-                <select name="group_id" style="width: 100%; padding: 8px;">
+                <select name="group_id" class="form-control">
                     {% for group in groups %}
                         <option value="{{ group.id }}">{{ group.name }}</option>
                     {% endfor %}
@@ -16,30 +20,30 @@
             {% endif %}
         </div>
 
-        <div style="margin-bottom: 15px;">
+        <div class="form-group">
             <label>Departamento:</label><br>
-            <select name="department" style="width: 100%; padding: 8px;">
+            <select name="department" class="form-control">
                 <option value="cyber">Ciberseguridad</option>
                 <option value="hr">Recursos Humanos</option>
                 <option value="data">Data Analysis</option>
             </select>
         </div>
 
-        <div style="margin-bottom: 15px;">
+        <div class="form-group">
             <label>Seleccionar Excel:</label><br>
-            <input type="file" name="excel_file" accept=".xlsx" required style="width: 100%; padding: 8px;">
+            <input type="file" name="excel_file" accept=".xlsx" required class="form-control">
         </div>
 
-        <div style="margin-bottom: 15px;">
+        <div class="form-group">
             <label>Asunto del Correo:</label><br>
-            <input type="text" name="subject" placeholder="Ej: Reporte Mensual de Vulnerabilidades" required style="width: 100%; padding: 8px;">
+            <input type="text" name="subject" placeholder="Ej: Reporte Mensual de Vulnerabilidades" required class="form-control">
         </div>
 
-        <div style="margin-bottom: 15px;">
+        <div class="form-group">
             <label>Contenido del Correo:</label><br>
-            <textarea name="body" rows="4" placeholder="Estimados, adjuntamos el reporte..." required style="width: 100%; padding: 8px;"></textarea>
+            <textarea name="body" rows="4" placeholder="Estimados, adjuntamos el reporte..." required class="form-control"></textarea>
         </div>
 
-        <button type="submit" style="background: #28a745; color: white; border: none; padding: 10px 20px; cursor: pointer; border-radius: 4px;">Generar y Enviar</button>
+        <button type="submit" class="btn-success">Generar y Enviar</button>
     </form>
 {% endblock %}

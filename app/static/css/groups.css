@@ -1,0 +1,58 @@
+/* groups.css */
+.form-section {
+    border: 1px solid #edf2f7; 
+    padding: 25px; 
+    border-radius: 10px; 
+    margin-bottom: 25px;
+    background: #f8fafc;
+}
+
+.form-input {
+    width: 100%; 
+    padding: 12px 15px; 
+    margin-bottom: 15px;
+    box-sizing: border-box;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+    font-family: inherit;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: #4361ee;
+    box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.15);
+    background: #ffffff;
+}
+
+.btn-primary {
+    background: #4361ee; 
+    color: white; 
+    border: none; 
+    padding: 12px 24px; 
+    cursor: pointer; 
+    border-radius: 6px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.btn-primary:hover {
+    background: #364fc7;
+    transform: translateY(-1px);
+}
+
+.btn-info {
+    background: #0ea5e9; 
+    color: white; 
+    border: none; 
+    padding: 12px 24px; 
+    cursor: pointer; 
+    border-radius: 6px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.btn-info:hover {
+    background: #0284c7;
+    transform: translateY(-1px);
+}

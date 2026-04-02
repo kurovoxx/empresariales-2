@@ -1,12 +1,16 @@
 {% extends 'base.html' %}
 
+{% block extra_css %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin_groups.css') }}">
+{% endblock %}
+
 {% block content %}
     <h2>Administración de Grupos</h2>
     <p>Selecciona un grupo para editar su nombre o gestionar sus correos.</p>
 
-    <div style="margin-bottom: 20px;">
+    <div class="group-selector-container">
         <label>Seleccionar Grupo:</label><br>
-        <select id="group-selector" style="width: 100%; padding: 10px; font-size: 16px;">
+        <select id="group-selector">
             <option value="" disabled selected>-- Elige un grupo --</option>
             {% for group in groups %}
                 <option value="{{ group.id }}" data-name="{{ group.name }}">{{ group.name }}</option>
@@ -15,21 +19,21 @@
     </div>
 
     <!-- Panel de Edición (Oculto por defecto) -->
-    <div id="admin-panel" style="display: none;">
-        <div style="border: 1px solid #ddd; padding: 20px; border-radius: 8px; margin-bottom: 20px; background: #fff;">
+    <div id="admin-panel">
+        <div class="admin-panel-section">
             <h3>Editar Nombre del Grupo</h3>
             <form action="{{ url_for('groups.handle_update_name') }}" method="POST">
                 <input type="hidden" id="edit-group-id" name="group_id">
-                <input type="text" id="edit-group-name" name="new_name" required style="width: 70%; padding: 8px;">
-                <button type="submit" style="background: #007bff; color: white; border: none; padding: 10px 20px; cursor: pointer; border-radius: 4px;">Guardar Nombre</button>
+                <input type="text" id="edit-group-name" name="new_name" required>
+                <button type="submit" class="btn-primary">Guardar Nombre</button>
             </form>
         </div>
 
-        <div style="border: 1px solid #ddd; padding: 20px; border-radius: 8px; background: #fff;">
+        <div class="admin-panel-section">
             <h3>Lista de Emails</h3>
-            <div id="email-list-container" style="max-height: 300px; overflow-y: auto; border: 1px solid #eee; padding: 10px; border-radius: 4px;">
+            <div id="email-list-container">
                 <!-- Aquí se cargarán los emails con JS -->
-                <p style="color: #666;">Cargando correos...</p>
+                <p class="text-loading">Cargando correos...</p>
             </div>
         </div>
     </div>
@@ -60,16 +64,13 @@
                     }
                     data.forEach(item => {
                         const div = document.createElement('div');
-                        div.style.display = 'flex';
-                        div.style.justifyContent = 'space-between';
-                        div.style.alignItems = 'center';
-                        div.style.padding = '8px';
-                        div.style.borderBottom = '1px solid #eee';
+                        // Usando la clase definida en el CSS
+                        div.className = 'email-list-item'; 
                         
                         div.innerHTML = `
                             <span>${item.email}</span>
                             <a href="/groups/delete_email/${item.id}" 
-                               style="background: #dc3545; color: white; text-decoration: none; padding: 4px 8px; border-radius: 4px; font-size: 12px;"
+                               class="btn-danger"
                                onclick="return confirm('¿Borrar este email?')">Borrar</a>
                         `;
                         emailList.appendChild(div);
