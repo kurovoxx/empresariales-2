@@ -15,6 +15,7 @@
         <h1>Sistema de Automatización</h1>
         <nav>
             <a href="/" class="{{ 'active' if request.path == '/' else '' }}">Pestaña Principal</a>
+            <a href="/schedule" class="{{ 'active' if request.path == '/schedule' else '' }}">Programar Correo</a>
             <a href="/groups" class="{{ 'active' if request.path == '/groups/' else '' }}">Crear Grupos</a>
             <a href="/groups/admin" class="{{ 'active' if request.path == '/groups/admin' else '' }}">Admin Grupos</a>
         </nav>

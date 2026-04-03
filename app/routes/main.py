@@ -14,6 +14,56 @@ def index():
     groups = get_groups()
     return render_template('index.html', groups=groups)
 
+@main_bp.route('/schedule')
+def schedule():
+    groups = get_groups()
+    return render_template('schedule.html', groups=groups)
+
+@main_bp.route('/schedule/process', methods=['POST'])
+def schedule_process():
+    schedule_time = request.form.get('schedule_time')
+    group_id = request.form.get('group_id')
+    department = request.form.get('department')
+    subject = request.form.get('subject')
+    body = request.form.get('body')
+    excel_file = request.files.get('excel_file')
+
+    if not excel_file or not schedule_time:
+        flash('Por favor complete todos los campos y suba un archivo Excel.', 'error')
+        return redirect(url_for('main.schedule'))
+
+    # Crear directorio base si no existe
+    base_dir = 'data/programado'
+    if not os.path.exists(base_dir):
+        os.makedirs(base_dir)
+
+    # Crear un subdirectorio único para esta programación (usando timestamp o la fecha programada)
+    # Reemplazamos caracteres no válidos para nombres de carpetas
+    folder_name = schedule_time.replace(':', '-').replace('T', '_')
+    target_dir = os.path.join(base_dir, folder_name)
+    
+    if not os.path.exists(target_dir):
+        os.makedirs(target_dir)
+
+    # Guardar archivos
+    excel_path = os.path.join(target_dir, excel_file.filename)
+    excel_file.save(excel_path)
+
+    with open(os.path.join(target_dir, 'asunto.txt'), 'w', encoding='utf-8') as f:
+        f.write(subject)
+
+    with open(os.path.join(target_dir, 'descripcion.txt'), 'w', encoding='utf-8') as f:
+        f.write(body)
+
+    # Guardar metadatos adicionales para que el procesador sepa qué hacer
+    with open(os.path.join(target_dir, 'info.txt'), 'w', encoding='utf-8') as f:
+        f.write(f"schedule_time: {schedule_time}\n")
+        f.write(f"group_id: {group_id}\n")
+        f.write(f"department: {department}\n")
+
+    flash(f'Éxito: Envío programado para {schedule_time}.', 'success')
+    return redirect(url_for('main.schedule'))
+
 @main_bp.route('/process', methods=['POST'])
 def process():
     group_id = request.form.get('group_id')
