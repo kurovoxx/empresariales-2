@@ -1,34 +1,75 @@
 {% extends 'base.html' %}
 
 {% block extra_css %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/groups.css') }}">
 {% endblock %}
 
 {% block content %}
-    <h2>Gestión de Grupos y Correos</h2>
-    
-    <div class="form-section">
-        <h3>Crear Nuevo Grupo</h3>
-        <form action="/groups/create" method="POST">
-            <input type="text" name="group_name" placeholder="Nombre del Grupo (ej: Gerencia)" required class="form-input">
-            <button type="submit" class="btn-primary">Crear Grupo</button>
-        </form>
+<section class="container-boxed reveal">
+    <div class="section-title">
+        <h2><i class="fas fa-users-cog"></i> Gestión de Grupos</h2>
+        <p>Crea nuevos grupos y añade miembros para tus envíos automatizados.</p>
     </div>
 
-    <div class="form-section">
-        <h3>Añadir Email a Grupo</h3>
-        <form action="/groups/add_email" method="POST">
-            <select name="group_id" class="form-input">
-                {% if groups %}
-                    {% for group in groups %}
-                        <option value="{{ group.id }}">{{ group.name }}</option>
-                    {% endfor %}
-                {% else %}
-                    <option disabled>No hay grupos disponibles</option>
-                {% endif %}
-            </select>
-            <input type="email" name="email" placeholder="correo@ejemplo.com" required class="form-input">
-            <button type="submit" class="btn-info">Añadir Email</button>
-        </form>
+    <div class="groups-grid">
+        <!-- Crear Grupo -->
+        <div class="card reveal">
+            <h3><i class="fas fa-plus-circle"></i> Nuevo Grupo</h3>
+            <form action="/groups/create" method="POST">
+                <div class="form-group">
+                    <label>Nombre del Grupo</label>
+                    <input type="text" name="group_name" placeholder="Ej: Equipo TI, Recursos Humanos..." required class="form-control">
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">
+                    <i class="fas fa-folder-plus"></i> Crear Grupo
+                </button>
+            </form>
+        </div>
+
+        <!-- Añadir Email -->
+        <div class="card reveal">
+            <h3><i class="fas fa-user-plus"></i> Añadir Miembro</h3>
+            <form action="/groups/add_email" method="POST">
+                <div class="form-group">
+                    <label>Seleccionar Grupo</label>
+                    <select name="group_id" class="form-control">
+                        {% for group in groups %}
+                            <option value="{{ group.id }}">{{ group.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Correo Electrónico</label>
+                    <input type="email" name="email" placeholder="correo@ejemplo.com" required class="form-control">
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">
+                    <i class="fas fa-envelope-open-text"></i> Añadir Email
+                </button>
+            </form>
+        </div>
     </div>
+</section>
+
+<style>
+    .groups-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+    }
+    .card {
+        background: var(--bg-light);
+        padding: 2rem;
+        border-radius: 16px;
+        border: 1px solid rgba(244, 63, 94, 0.1);
+    }
+    .card h3 {
+        margin-bottom: 1.5rem;
+        color: var(--primary);
+        font-size: 1.2rem;
+    }
+    @media (max-width: 768px) {
+        .groups-grid { grid-template-columns: 1fr; }
+    }
+</style>
 {% endblock %}

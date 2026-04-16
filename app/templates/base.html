@@ -3,32 +3,121 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Generador de Reportes Empresariales</title>
-    <!-- Vinculación correcta en Flask -->
+    <title>EmailFlow | Automatización Inteligente</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
-    
-    <!-- Bloque para que cada página cargue su propio CSS -->
     {% block extra_css %}{% endblock %}
 </head>
 <body>
-    <div class="container">
-        <h1>Sistema de Automatización</h1>
-        <nav>
-            <a href="/" class="{{ 'active' if request.path == '/' else '' }}">Pestaña Principal</a>
-            <a href="/schedule" class="{{ 'active' if request.path == '/schedule' else '' }}">Programar Correo</a>
-            <a href="/groups" class="{{ 'active' if request.path == '/groups/' else '' }}">Crear Grupos</a>
-            <a href="/groups/admin" class="{{ 'active' if request.path == '/groups/admin' else '' }}">Admin Grupos</a>
+    <!-- Header & Navigation -->
+    <header>
+        <nav class="nav-container">
+            <!-- Botón móvil a la izquierda -->
+            <button class="hamburger" id="hamburger">
+                <div></div>
+                <div></div>
+                <div></div>
+            </button>
+
+            <!-- Pestañas centradas -->
+            <ul class="nav-links" id="nav-links">
+                <li><a href="/" class="{{ 'active' if request.path == '/' else '' }}">Inicio</a></li>
+                <li><a href="/schedule" class="{{ 'active' if request.path == '/schedule' else '' }}">Programar</a></li>
+                <li><a href="/groups" class="{{ 'active' if request.path == '/groups/' else '' }}">Grupos</a></li>
+                <li><a href="/groups/admin" class="{{ 'active' if request.path == '/groups/admin' else '' }}">Admin</a></li>
+            </ul>
+
+            <!-- Logo a la derecha -->
+            <a href="/" class="logo">Email<span>Flow</span></a>
         </nav>
-        
+    </header>
+
+    <!-- Alerts Container -->
+    <div class="alert-container">
         {% with messages = get_flashed_messages(with_categories=true) %}
           {% if messages %}
             {% for category, message in messages %}
-              <div class="alert alert-{{ category }}">{{ message }}</div>
+              <div class="alert alert-{{ category }}">
+                  <i class="fas {{ 'fa-check-circle' if category == 'success' else 'fa-exclamation-circle' }}"></i>
+                  <span>{{ message }}</span>
+              </div>
             {% endfor %}
           {% endif %}
         {% endwith %}
-
-        {% block content %}{% endblock %}
     </div>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Back to Top Button -->
+    <div id="back-to-top">
+        <i class="fas fa-chevron-up"></i>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <p>&copy; 2026 EmailFlow. Todos los derechos reservados.</p>
+            <div class="footer-socials">
+                <a href="#"><i class="fab fa-twitter"></i></a>
+                <a href="#"><i class="fab fa-linkedin"></i></a>
+                <a href="#"><i class="fab fa-github"></i></a>
+                <a href="#"><i class="fab fa-facebook"></i></a>
+            </div>
+            <p>Hecho con <i class="fas fa-heart" style="color: var(--primary);"></i> por Kurovox</p>
+        </div>
+    </footer>
+
+    <!-- Global Scripts -->
+    <script>
+        // Mobile Menu Toggle
+        const hamburger = document.getElementById('hamburger');
+        const navLinks = document.getElementById('nav-links');
+
+        hamburger.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+            hamburger.classList.toggle('toggle');
+        });
+
+        // Back to Top Button
+        const backToTop = document.getElementById('back-to-top');
+
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 300) {
+                backToTop.classList.add('show');
+            } else {
+                backToTop.classList.remove('show');
+            }
+        });
+
+        backToTop.addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        // Scroll Animations (Intersection Observer)
+        const observerOptions = {
+            threshold: 0.1
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+        // Auto-dismiss alerts
+        setTimeout(() => {
+            document.querySelectorAll('.alert').forEach(alert => {
+                alert.style.opacity = '0';
+                setTimeout(() => alert.remove(), 500);
+            });
+        }, 5000);
+    </script>
 </body>
 </html>

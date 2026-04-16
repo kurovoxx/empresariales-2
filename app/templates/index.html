@@ -5,45 +5,158 @@
 {% endblock %}
 
 {% block content %}
-    <h2>Envío de Reportes</h2>
+<!-- Hero Section -->
+<section class="hero reveal">
+    <div class="hero-content">
+        <h1>EmailFlow: <span class="highlight">Eye Catching</span> Automatization</h1>
+        <p>Transforma tus reportes de Excel en elegantes documentos PDF y automatiza su envío masivo con un solo clic.</p>
+        <div class="hero-btns">
+            <a href="#main-form" class="btn btn-primary">Empezar Ahora</a>
+            <a href="#features" class="btn btn-secondary">Ver Características</a>
+        </div>
+    </div>
+    <div class="hero-image">
+        <img src="https://picsum.photos/seed/email/800/600" alt="Automatización de Correos">
+    </div>
+</section>
+
+<!-- Features Section -->
+<section id="features" class="features grid reveal">
+    <div class="feature-card">
+        <i class="fas fa-file-excel"></i>
+        <h3>Parseo Inteligente</h3>
+        <p>Extraemos datos de cualquier archivo Excel validando la estructura automáticamente por departamento.</p>
+    </div>
+    <div class="feature-card">
+        <i class="fas fa-file-pdf"></i>
+        <h3>PDFs Profesionales</h3>
+        <p>Generación instantánea de reportes PDF con diseños corporativos y visualizaciones de datos.</p>
+    </div>
+    <div class="feature-card">
+        <i class="fas fa-paper-plane"></i>
+        <h3>Envío Masivo</h3>
+        <p>Envía tus reportes a grupos de correos ilimitados de forma segura y eficiente vía SMTP.</p>
+    </div>
+</section>
+
+<!-- Main Process Section -->
+<section id="main-form" class="container-boxed reveal">
+    <div class="section-title">
+        <h2>Enviar Reporte Inmediato</h2>
+        <p>Completa el formulario para procesar tu archivo y realizar el envío.</p>
+    </div>
+
     <form action="/process" method="POST" enctype="multipart/form-data">
-        <div class="form-group">
-            <label>Grupo de Destinatarios:</label><br>
-            {% if not groups %}
-                <p class="text-danger">Por favor cree un grupo en la pestaña "Crear Grupos"</p>
-            {% else %}
-                <select name="group_id" class="form-control">
-                    {% for group in groups %}
-                        <option value="{{ group.id }}">{{ group.name }}</option>
-                    {% endfor %}
+        <div class="form-grid">
+            <div class="form-group">
+                <label><i class="fas fa-users"></i> Grupo de Destinatarios</label>
+                {% if not groups %}
+                    <p class="text-danger">Por favor cree un grupo en la pestaña "Grupos"</p>
+                {% else %}
+                    <select name="group_id" class="form-control">
+                        {% for group in groups %}
+                            <option value="{{ group.id }}">{{ group.name }}</option>
+                        {% endfor %}
+                    </select>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label><i class="fas fa-building"></i> Departamento</label>
+                <select name="department" class="form-control">
+                    <option value="cyber">Ciberseguridad</option>
+                    <option value="hr">Recursos Humanos</option>
+                    <option value="data">Análisis de Datos</option>
                 </select>
-            {% endif %}
+            </div>
         </div>
 
         <div class="form-group">
-            <label>Departamento:</label><br>
-            <select name="department" class="form-control">
-                <option value="cyber">Ciberseguridad</option>
-                <option value="hr">Recursos Humanos</option>
-                <option value="data">Data Analysis</option>
-            </select>
+            <label><i class="fas fa-upload"></i> Seleccionar Archivo Excel (.xlsx)</label>
+            <div class="file-input-wrapper">
+                <input type="file" name="excel_file" id="excel_file" accept=".xlsx" required>
+                <label for="excel_file" class="file-label">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <span>Arrastra o haz clic para subir</span>
+                </label>
+            </div>
         </div>
 
         <div class="form-group">
-            <label>Seleccionar Excel:</label><br>
-            <input type="file" name="excel_file" accept=".xlsx" required class="form-control">
+            <label><i class="fas fa-heading"></i> Asunto del Correo</label>
+            <input type="text" name="subject" placeholder="Ej: Reporte de Vulnerabilidades Mensual" required class="form-control">
         </div>
 
         <div class="form-group">
-            <label>Asunto del Correo:</label><br>
-            <input type="text" name="subject" placeholder="Ej: Reporte Mensual de Vulnerabilidades" required class="form-control">
+            <label><i class="fas fa-align-left"></i> Contenido del Mensaje</label>
+            <textarea name="body" rows="5" placeholder="Estimados, adjuntamos el reporte correspondiente..." required class="form-control"></textarea>
         </div>
 
-        <div class="form-group">
-            <label>Contenido del Correo:</label><br>
-            <textarea name="body" rows="4" placeholder="Estimados, adjuntamos el reporte..." required class="form-control"></textarea>
-        </div>
-
-        <button type="submit" class="btn-success">Generar y Enviar</button>
+        <button type="submit" class="btn btn-primary btn-block">
+            <i class="fas fa-magic"></i> Generar y Enviar Reporte
+        </button>
     </form>
+</section>
+
+<!-- FAQ Section -->
+<section id="faq" class="faq reveal">
+    <div class="section-title">
+        <h2>Preguntas Frecuentes</h2>
+        <p>Todo lo que necesitas saber sobre EmailFlow.</p>
+    </div>
+    
+    <div class="accordion-container">
+        <div class="accordion-item">
+            <div class="accordion-header">
+                <h3>¿Qué formatos de archivo son compatibles?</h3>
+                <i class="fas fa-plus"></i>
+            </div>
+            <div class="accordion-content">
+                <p>Actualmente EmailFlow soporta archivos Excel (.xlsx) con esquemas de datos específicos para Ciberseguridad, Recursos Humanos y Análisis de Datos.</p>
+            </div>
+        </div>
+        <div class="accordion-item">
+            <div class="accordion-header">
+                <h3>¿Cómo funciona la programación de correos?</h3>
+                <i class="fas fa-plus"></i>
+            </div>
+            <div class="accordion-content">
+                <p>Puedes subir tu archivo y elegir una fecha/hora futura. Nuestro sistema almacenará los datos y ejecutará el envío automáticamente en el momento exacto.</p>
+            </div>
+        </div>
+        <div class="accordion-item">
+            <div class="accordion-header">
+                <h3>¿Es seguro el envío de correos?</h3>
+                <i class="fas fa-plus"></i>
+            </div>
+            <div class="accordion-content">
+                <p>Sí, utilizamos conexiones cifradas TLS/SSL a través de servidores SMTP confiables para garantizar que tus correos lleguen de forma segura.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    // FAQ Accordion Logic
+    document.querySelectorAll('.accordion-header').forEach(header => {
+        header.addEventListener('click', () => {
+            const item = header.parentElement;
+            item.classList.toggle('active');
+            const icon = header.querySelector('i');
+            icon.classList.toggle('fa-plus');
+            icon.classList.toggle('fa-minus');
+        });
+    });
+
+    // File input preview
+    const fileInput = document.getElementById('excel_file');
+    const fileLabel = document.querySelector('.file-label span');
+    
+    fileInput.addEventListener('change', (e) => {
+        if (e.target.files.length > 0) {
+            fileLabel.textContent = e.target.files[0].name;
+            fileLabel.parentElement.style.borderColor = 'var(--primary)';
+        }
+    });
+</script>
 {% endblock %}
