@@ -16,11 +16,13 @@ def process_scheduled_tasks(app=None):
         return
 
     now = datetime.datetime.now()
+    # print(f"--- [PLANIFICADOR] Revisando tareas en {base_dir} ({now}) ---")
 
     for folder in base_dir.iterdir():
         if not folder.is_dir():
             continue
 
+        print(f"--- [PLANIFICADOR] Carpeta encontrada: {folder.name} ---")
         info_file = folder / 'info.txt'
         if not info_file.exists():
             continue
@@ -42,12 +44,17 @@ def process_scheduled_tasks(app=None):
             continue
 
         try:
+            # Manejar el formato T de los inputs datetime-local
             schedule_time = datetime.datetime.fromisoformat(schedule_time_str)
-        except ValueError:
+        except ValueError as e:
+            print(f"Error parseando fecha {schedule_time_str}: {e}")
             continue
 
+        # Log para depuración
+        # print(f"Comparando: Ahora {now} >= Programado {schedule_time}")
+
         if now >= schedule_time:
-            print(f"[{now}] Ejecutando envío programado: {folder.name}")
+            print(f"[{now}] !!! EJECUTANDO ENVÍO PROGRAMADO: {folder.name} !!!")
             
             group_id = info.get('group_id')
             department = info.get('department')

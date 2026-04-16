@@ -61,6 +61,7 @@ def schedule_process():
         f.write(f"group_id: {group_id}\n")
         f.write(f"department: {department}\n")
 
+    print(f"--- [SISTEMA] Tarea programada guardada en: {target_dir} ---")
     flash(f'Éxito: Envío programado para {schedule_time}.', 'success')
     return redirect(url_for('main.schedule'))
 
@@ -77,7 +78,11 @@ def process():
         return redirect(url_for('main.index'))
 
     # Guardar archivo temporalmente
-    temp_path = os.path.join('data/temp', excel_file.filename)
+    temp_dir = 'data/temp'
+    if not os.path.exists(temp_dir):
+        os.makedirs(temp_dir)
+        
+    temp_path = os.path.join(temp_dir, excel_file.filename)
     excel_file.save(temp_path)
 
     # 1. VALIDAR

@@ -1,81 +1,162 @@
 {% extends 'base.html' %}
 
 {% block extra_css %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/admin_groups.css') }}">
 {% endblock %}
 
 {% block content %}
-    <h2>Administración de Grupos</h2>
-    <p>Selecciona un grupo para editar su nombre o gestionar sus correos.</p>
-
-    <div class="group-selector-container">
-        <label>Seleccionar Grupo:</label><br>
-        <select id="group-selector">
-            <option value="" disabled selected>-- Elige un grupo --</option>
-            {% for group in groups %}
-                <option value="{{ group.id }}" data-name="{{ group.name }}">{{ group.name }}</option>
-            {% endfor %}
-        </select>
+<section class="container-boxed reveal">
+    <div class="section-title">
+        <h2><i class="fas fa-tools"></i> Panel de Administración</h2>
+        <p>Gestiona los grupos existentes y sus miembros asociados.</p>
     </div>
 
-    <!-- Panel de Edición (Oculto por defecto) -->
-    <div id="admin-panel">
-        <div class="admin-panel-section">
-            <h3>Editar Nombre del Grupo</h3>
-            <form action="{{ url_for('groups.handle_update_name') }}" method="POST">
-                <input type="hidden" id="edit-group-id" name="group_id">
-                <input type="text" id="edit-group-name" name="new_name" required>
-                <button type="submit" class="btn-primary">Guardar Nombre</button>
-            </form>
-        </div>
-
-        <div class="admin-panel-section">
-            <h3>Lista de Emails</h3>
-            <div id="email-list-container">
-                <!-- Aquí se cargarán los emails con JS -->
-                <p class="text-loading">Cargando correos...</p>
+    <!-- Modificar nombre de grupo -->
+    <div class="card reveal" style="margin-bottom: 3rem;">
+        <h3><i class="fas fa-edit"></i> Editar Nombre del Grupo</h3>
+        <form action="/groups/update_name" method="POST">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Seleccionar Grupo</label>
+                    <select name="group_id" class="form-control">
+                        {% for group in groups %}
+                            <option value="{{ group.id }}">{{ group.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Nuevo Nombre</label>
+                    <input type="text" name="new_name" placeholder="Ej: Nuevo Nombre del Grupo" required class="form-control">
+                </div>
             </div>
-        </div>
+            <button type="submit" class="btn btn-primary" style="margin-top: 1rem;">Actualizar Nombre</button>
+        </form>
     </div>
 
-    <script>
-        const selector = document.getElementById('group-selector');
-        const panel = document.getElementById('admin-panel');
-        const editId = document.getElementById('edit-group-id');
-        const editName = document.getElementById('edit-group-name');
-        const emailList = document.getElementById('email-list-container');
+    <!-- Visualizar emails por grupo -->
+    <div class="card reveal">
+        <h3><i class="fas fa-list-ul"></i> Miembros del Grupo</h3>
+        <div class="form-group">
+            <label>Filtrar por Grupo</label>
+            <select id="select-group" class="form-control">
+                <option value="">-- Seleccione un Grupo --</option>
+                {% for group in groups %}
+                    <option value="{{ group.id }}">{{ group.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
 
-        selector.addEventListener('change', function() {
-            const groupId = this.value;
-            const groupName = this.options[this.selectedIndex].getAttribute('data-name');
-            
-            panel.style.display = 'block';
-            editId.value = groupId;
-            editName.value = groupName;
+        <div class="table-container">
+            <table class="email-table">
+                <thead>
+                    <tr>
+                        <th>Email</th>
+                        <th style="text-align: right;">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="email-list">
+                    <!-- Se carga via JavaScript -->
+                    <tr>
+                        <td colspan="2" style="text-align: center; color: var(--text-muted); padding: 2rem;">
+                            Seleccione un grupo para ver los correos.
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
 
-            // Cargar emails vía API
-            fetch(`/groups/api/emails/${groupId}`)
-                .then(response => response.json())
-                .then(data => {
-                    emailList.innerHTML = '';
-                    if (data.length === 0) {
-                        emailList.innerHTML = '<p>No hay emails en este grupo.</p>';
-                        return;
-                    }
+<script>
+    document.getElementById('select-group').addEventListener('change', function() {
+        const groupId = this.value;
+        const emailList = document.getElementById('email-list');
+        
+        if (!groupId) {
+            emailList.innerHTML = '<tr><td colspan="2" style="text-align: center; padding: 2rem;">Seleccione un grupo para ver los correos.</td></tr>';
+            return;
+        }
+
+        emailList.innerHTML = '<tr><td colspan="2" style="text-align: center; padding: 2rem;"><i class="fas fa-spinner fa-spin"></i> Cargando...</td></tr>';
+
+        fetch(`/groups/api/emails/${groupId}`)
+            .then(response => response.json())
+            .then(data => {
+                emailList.innerHTML = '';
+                if (data.length === 0) {
+                    emailList.innerHTML = '<tr><td colspan="2" style="text-align: center; padding: 2rem;">Este grupo no tiene correos registrados.</td></tr>';
+                } else {
                     data.forEach(item => {
-                        const div = document.createElement('div');
-                        // Usando la clase definida en el CSS
-                        div.className = 'email-list-item'; 
-                        
-                        div.innerHTML = `
-                            <span>${item.email}</span>
-                            <a href="/groups/delete_email/${item.id}" 
-                               class="btn-danger"
-                               onclick="return confirm('¿Borrar este email?')">Borrar</a>
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${item.email}</td>
+                            <td style="text-align: right;">
+                                <a href="/groups/delete_email/${item.id}" class="btn-delete" onclick="return confirm('¿Está seguro de eliminar este correo?')">
+                                    <i class="fas fa-trash-alt"></i> Eliminar
+                                </a>
+                            </td>
                         `;
-                        emailList.appendChild(div);
+                        emailList.appendChild(row);
                     });
-                });
-        });
-    </script>
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching emails:', error);
+                emailList.innerHTML = '<tr><td colspan="2" style="text-align: center; padding: 2rem; color: var(--primary);">Error al cargar los datos.</td></tr>';
+            });
+    });
+</script>
+
+<style>
+    .card {
+        background: var(--bg-light);
+        padding: 2.5rem;
+        border-radius: 20px;
+        border: 1px solid rgba(244, 63, 94, 0.1);
+    }
+    .card h3 {
+        margin-bottom: 2rem;
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+        color: var(--text-dark);
+    }
+    .table-container {
+        margin-top: 1.5rem;
+        border-radius: 12px;
+        overflow: hidden;
+        border: 1px solid #E5E7EB;
+        background: var(--white);
+    }
+    .email-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    .email-table th {
+        background: #F9FAFB;
+        padding: 1rem 1.5rem;
+        text-align: left;
+        font-weight: 600;
+        color: var(--text-muted);
+        border-bottom: 1px solid #E5E7EB;
+    }
+    .email-table td {
+        padding: 1rem 1.5rem;
+        border-bottom: 1px solid #F3F4F6;
+    }
+    .btn-delete {
+        color: var(--primary);
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.9rem;
+        transition: var(--transition);
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+    }
+    .btn-delete:hover {
+        background: var(--bg-light);
+        color: var(--accent);
+    }
+</style>
 {% endblock %}

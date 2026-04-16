@@ -21,17 +21,18 @@ def create_app():
     from app.services.scheduler import process_scheduled_tasks
     
     def run_scheduler():
-        # Evitar que se ejecute dos veces cuando Flask está en modo debug/reload
+        # En modo debug, Flask ejecuta el código dos veces (el reloader). 
+        # WERKZEUG_RUN_MAIN asegura que solo el proceso principal inicie el hilo.
         if os.environ.get('WERKZEUG_RUN_MAIN') == 'true' or not app.debug:
-            print("Iniciando hilo del planificador...")
+            print(f"--- [PLANIFICADOR] Hilo iniciado (Debug: {app.debug}) ---")
             while True:
                 try:
-                    # Pasamos la app al procesador para manejar el contexto
                     process_scheduled_tasks(app)
                 except Exception as e:
-                    print(f"Error en el planificador: {e}")
-                time.sleep(30) # Revisar cada 30 segundos
+                    print(f"--- [PLANIFICADOR] ERROR: {e} ---")
+                time.sleep(30)
 
+    # Iniciar siempre el hilo, la validación interna decidirá si entra al bucle
     scheduler_thread = threading.Thread(target=run_scheduler, daemon=True)
     scheduler_thread.start()
 
