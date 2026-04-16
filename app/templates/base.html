@@ -9,6 +9,12 @@
     {% block extra_css %}{% endblock %}
 </head>
 <body>
+    <!-- Loading Overlay para Acciones en la DB / Envíos -->
+    <div id="loading-overlay">
+        <div class="loader"></div>
+        <p>Procesando Solicitud...</p>
+    </div>
+
     <!-- Header & Navigation -->
     <header>
         <nav class="nav-container">
@@ -118,6 +124,11 @@
                 setTimeout(() => alert.remove(), 500);
             });
         }, 5000);
+
+        // Mostrar loading solo en acciones de formulario (DB, Envíos, etc)
+        document.addEventListener('submit', function() {
+            document.getElementById('loading-overlay').style.display = 'flex';
+        });
     </script>
 </body>
 </html>
