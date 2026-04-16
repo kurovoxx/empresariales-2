@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, flash, redirect, url_for
+from flask import Blueprint, render_template, request, flash, redirect, url_for, jsonify
 from app.models.database import get_groups, get_emails_by_group
 from app.services.validator import validate_excel
 from app.services.processors.cyber import CyberReportProcessor
@@ -64,6 +64,42 @@ def schedule_process():
     print(f"--- [SISTEMA] Tarea programada guardada en: {target_dir} ---")
     flash(f'Éxito: Envío programado para {schedule_time}.', 'success')
     return redirect(url_for('main.schedule'))
+
+@main_bp.route('/validate-excel', methods=['POST'])
+def validate_excel_route():
+    department = request.form.get('department')
+    excel_file = request.files.get('excel_file')
+
+    # Validación de seguridad básica
+    if not excel_file:
+        return jsonify({'is_valid': False, 'message': 'No se recibió ningún archivo.'}), 400
+
+    # Asegurarnos de que el directorio temporal exista
+    temp_dir = 'data/temp'
+    if not os.path.exists(temp_dir):
+        os.makedirs(temp_dir)
+        
+    temp_path = os.path.join(temp_dir, excel_file.filename)
+    excel_file.save(temp_path)
+
+    try:
+        # Usamos tu misma función importada para revisar el Excel
+        is_valid, result = validate_excel(temp_path, department)
+        
+        if is_valid:
+            return jsonify({'is_valid': True, 'message': 'Archivo válido y listo.'})
+        else:
+            # Si no es válido, result suele contener el mensaje de error de tu validador
+            return jsonify({'is_valid': False, 'message': str(result)})
+            
+    except Exception as e:
+        return jsonify({'is_valid': False, 'message': f'Error al leer el archivo: {str(e)}'}), 500
+        
+    finally:
+        # MUY IMPORTANTE: Borrar el archivo temporal inmediatamente después de validarlo
+        # para no llenar el servidor de basura
+        if os.path.exists(temp_path):
+            os.remove(temp_path)
 
 @main_bp.route('/process', methods=['POST'])
 def process():

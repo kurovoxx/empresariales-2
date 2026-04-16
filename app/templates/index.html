@@ -5,7 +5,6 @@
 {% endblock %}
 
 {% block content %}
-<!-- Hero Section -->
 <section class="hero reveal">
     <div class="hero-content">
         <h1>EmailFlow: <span class="highlight">Eye Catching</span> Automatization</h1>
@@ -20,7 +19,6 @@
     </div>
 </section>
 
-<!-- Features Section -->
 <section id="features" class="features grid reveal">
     <div class="feature-card">
         <i class="fas fa-file-excel"></i>
@@ -39,7 +37,6 @@
     </div>
 </section>
 
-<!-- Main Process Section -->
 <section id="main-form" class="container-boxed reveal">
     <div class="section-title">
         <h2>Enviar Reporte Inmediato</h2>
@@ -63,7 +60,7 @@
 
             <div class="form-group">
                 <label><i class="fas fa-building"></i> Departamento</label>
-                <select name="department" class="form-control">
+                <select name="department" id="department-select" class="form-control">
                     <option value="cyber">Ciberseguridad</option>
                     <option value="hr">Recursos Humanos</option>
                     <option value="data">Análisis de Datos</option>
@@ -80,6 +77,7 @@
                     <span>Arrastra o haz clic para subir</span>
                 </label>
             </div>
+            <div id="validation-feedback" style="margin-top: 10px; font-weight: bold; font-size: 0.9em;"></div>
         </div>
 
         <div class="form-group">
@@ -92,13 +90,12 @@
             <textarea name="body" rows="5" placeholder="Estimados, adjuntamos el reporte correspondiente..." required class="form-control"></textarea>
         </div>
 
-        <button type="submit" class="btn btn-primary btn-block">
+        <button type="submit" id="submit-btn" class="btn btn-primary btn-block" disabled style="opacity: 0.5; cursor: not-allowed;">
             <i class="fas fa-magic"></i> Generar y Enviar Reporte
         </button>
     </form>
 </section>
 
-<!-- FAQ Section -->
 <section id="faq" class="faq reveal">
     <div class="section-title">
         <h2>Preguntas Frecuentes</h2>
@@ -148,14 +145,75 @@
         });
     });
 
-    // File input preview
+    // Lógica de Validación Profunda
     const fileInput = document.getElementById('excel_file');
     const fileLabel = document.querySelector('.file-label span');
-    
-    fileInput.addEventListener('change', (e) => {
+    const submitBtn = document.getElementById('submit-btn');
+    const feedbackDiv = document.getElementById('validation-feedback');
+    const deptSelect = document.getElementById('department-select');
+
+    // Función para resetear el estado del botón
+    const disableBtn = () => {
+        submitBtn.disabled = true;
+        submitBtn.style.opacity = '0.5';
+        submitBtn.style.cursor = 'not-allowed';
+    };
+
+    const enableBtn = () => {
+        submitBtn.disabled = false;
+        submitBtn.style.opacity = '1';
+        submitBtn.style.cursor = 'pointer';
+    };
+
+    fileInput.addEventListener('change', async (e) => {
         if (e.target.files.length > 0) {
-            fileLabel.textContent = e.target.files[0].name;
-            fileLabel.parentElement.style.borderColor = 'var(--primary)';
+            const file = e.target.files[0];
+            fileLabel.textContent = file.name;
+            
+            // Validación básica de extensión
+            if (!file.name.toLowerCase().endsWith('.xlsx')) {
+                 feedbackDiv.innerHTML = '<i class="fas fa-times-circle"></i> Solo se permiten archivos .xlsx';
+                 feedbackDiv.style.color = '#dc3545';
+                 disableBtn();
+                 return;
+            }
+
+            // Estado de "Cargando"
+            feedbackDiv.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Validando estructura del Excel...';
+            feedbackDiv.style.color = '#0056b3';
+
+            const formData = new FormData();
+            formData.append('excel_file', file);
+            formData.append('department', deptSelect.value);
+
+            try {
+                const response = await fetch('/validate-excel', {
+                    method: 'POST',
+                    body: formData
+                });
+                const result = await response.json();
+
+                if (result.is_valid) {
+                    feedbackDiv.innerHTML = '<i class="fas fa-check-circle"></i> Archivo válido para ' + deptSelect.options[deptSelect.selectedIndex].text;
+                    feedbackDiv.style.color = '#28a745';
+                    enableBtn();
+                } else {
+                    feedbackDiv.innerHTML = '<i class="fas fa-times-circle"></i> ' + result.message;
+                    feedbackDiv.style.color = '#dc3545';
+                    disableBtn();
+                }
+            } catch (error) {
+                feedbackDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Error al conectar con el servidor.';
+                feedbackDiv.style.color = '#dc3545';
+                disableBtn();
+            }
+        }
+    });
+
+    // Re-validar si el usuario cambia el departamento después de subir el archivo
+    deptSelect.addEventListener('change', () => {
+        if (fileInput.files.length > 0) {
+            fileInput.dispatchEvent(new Event('change'));
         }
     });
 </script>

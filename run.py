@@ -1,21 +1,21 @@
 from app import create_app
-from app.models.database import init_db
 import os
+import logging
+from werkzeug.serving import WSGIRequestHandler
 
 app = create_app()
 
-if __name__ == "__main__":
-    # Asegurar que las carpetas de datos existan al arrancar
-    os.makedirs('data/samples', exist_ok=True)
-    os.makedirs('data/temp', exist_ok=True)
-    
-    # Inicializar base de datos en Turso
-    print("Iniciando base de datos en Turso...")
-    try:
-        init_db()
-        print("✓ Base de datos lista.")
-    except Exception as e:
-        print(f"⚠ Error al conectar con Turso: {e}")
-    
-    # Iniciar la aplicación
-    app.run(debug=True, port=5001)
+if __name__ == '__main__':
+    port = int(os.environ.get('PORT', 5000))
+    host = '0.0.0.0'
+
+    # 🔥 Desactivar logs informativos de Flask
+    log = logging.getLogger('werkzeug')
+    log.setLevel(logging.ERROR)
+
+    print("\n" + "="*50)
+    print("🚀 ¡EmailFlow está iniciando con éxito!")
+    print(f"🔗 Accede a la aplicación aquí: http://localhost:{port}")
+    print("="*50 + "\n")
+
+    app.run(host=host, port=port, debug=False)
